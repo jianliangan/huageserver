@@ -1,0 +1,13 @@
+gcc -g noepoll.c hg_queue.c hg_pool.c -lpthread -o myqueueserver
+//1核 单线程写单线程读 自己的队列性能 100毫秒左右，4核多写入单线程读，40毫秒左右
+gcc server.c -o epollserver -lpthread -g
+//1核单线程写单线程读epoll+pipe耗时,179毫秒，4核多写入，单线程读，30毫秒左右
+gcc onlypipeserver.c -o onlypipeserver -lpthread -g
+//4核多写入，单线程读
+1\4核 4线程写入，1读取，用自旋锁模拟简单缓冲区，耗时4毫秒多点
+2\4核 1线程写入，1读取，用自旋锁模拟myqueque操作，耗时8毫秒
+3\4核 1写入1读取，用mutex耗时30毫秒左右
+4\1核 1写入1读取，用mutex耗时100毫秒左右
+5\1核 1写入1读取，用自旋锁耗时140毫秒左右
+6\4核 2写入1读取，用自旋锁加myqueue 40毫秒左右，mutext myqueue 50-60毫秒
+//
